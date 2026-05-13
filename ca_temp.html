@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>California Extreme Temperature Patterns by Years</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    body {
+      font-family: 'Georgia', serif;
+      background: #f5f2ec;
+      color: #222;
+      min-height: 100vh;
+      padding: 1.5rem 2rem;
+    }
+ 
+    h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 0.2rem;
+    }
+ 
+    .subtitle {
+      font-size: 0.78rem;
+      color: #777;
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+ 
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+ 
+    .ctrl-btn {
+      padding: 5px 14px;
+      font-size: 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1.5px solid #999;
+      background: transparent;
+      color: #333;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .ctrl-btn:hover { background: #e8e4dc; }
+    .ctrl-btn.active-hot   { background: #8B0000; border-color: #8B0000; color: #fff; }
+    .ctrl-btn.active-cold  { background: #003080; border-color: #003080; color: #fff; }
+    .ctrl-btn.active-range { background: #5a0060; border-color: #5a0060; color: #fff; }
+ 
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .slider-row label { font-size: 12px; color: #666; white-space: nowrap; }
+ 
+    #dec-sl {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 260px;
+      height: 4px;
+      border-radius: 2px;
+      background: #ccc;
+      outline: none;
+      cursor: pointer;
+    }
+    #dec-sl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #444;
+      cursor: pointer;
+    }
+    #dec-lbl {
+      font-size: 15px;
+      font-weight: 600;
+      min-width: 42px;
+      color: #111;
+    }
+ 
+    .layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+ 
+    #map-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+ 
+    #ca-svg {
+      width: 100%;
+      max-width: 480px;
+      display: block;
+    }
+ 
+    /* Grid cells */
+    .grid-cell {
+      stroke: none;
+      cursor: crosshair;
+    }
+    .grid-cell:hover {
+      stroke: #fff;
+      stroke-width: 1.5px;
+    }
+ 
+    /* California outline on top */
+    .ca-outline {
+      fill: none;
+      stroke: #555;
+      stroke-width: 1.5px;
+      pointer-events: none;
+    }
+ 
+    /* Floating label that follows mouse */
+    #float-label {
+      position: absolute;
+      pointer-events: none;
+      display: none;
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 11px;
+      font-family: 'Georgia', serif;
+      line-height: 1.8;
+      min-width: 150px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      z-index: 20;
+    }
+ 
+    /* Sidebar */
+    .sidebar { flex: 0 0 155px; }
+ 
+    #legend-wrap { margin-bottom: 16px; }
+ 
+    .leg-title {
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+ 
+    #legend-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: 3px;
+      margin-bottom: 3px;
+    }
+ 
+    .leg-axis {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #777;
+    }
+ 
+    #hovered-panel {
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #555;
+      line-height: 1.9;
+      min-height: 90px;
+    }
+ 
+    .hov-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+ 
+    #loading-msg {
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+      padding: 2rem 0;
+    }
+ 
+    footer {
+      margin-top: 1.5rem;
+      font-size: 10px;
+      color: #aaa;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+ 
+<h1>How has California's extreme temperature shifted across years?</h1>
+<p class="subtitle">Every CMIP6 CESM2 grid cell over California, 1950–2014 — hover any cell to see its value</p>
+ 
+<div class="controls">
+  <button class="ctrl-btn active-hot" id="btn-hot"   onclick="setMode('hot')">Hottest extreme</button>
+  <button class="ctrl-btn"            id="btn-cold"  onclick="setMode('cold')">Coldest extreme</button>
+  <button class="ctrl-btn"            id="btn-range" onclick="setMode('range')">Temp range (hot−cold)</button>
+</div>
+ 
+<div class="slider-row">
+  <label for="dec-sl">Year</label>
+
+  <input
+    type="range"
+    id="dec-sl"
+    min="0"
+    max="64"
+    step="1"
+    value="0"
+    oninput="setYear(+this.value)"
+  >
+
+  <span id="dec-lbl">1950</span>
+</div>
+ 
+<div class="layout">
+  <div id="map-wrap">
+    <p id="loading-msg">Loading grid data — place <strong>ca_grid_data.json</strong> in the same folder as this HTML file...</p>
+    <svg id="ca-svg" viewBox="0 0 480 620" style="display:none;"></svg>
+    <div id="float-label"></div>
+  </div>
+ 
+  <div class="sidebar">
+    <div id="legend-wrap">
+      <div class="leg-title" id="leg-title">Max temp (°C)</div>
+      <canvas id="legend-bar" width="155" height="14"></canvas>
+      <div class="leg-axis">
+        <span id="leg-lo"></span>
+        <span id="leg-hi"></span>
+      </div>
+    </div>
+ 
+    <div id="hovered-panel">
+      <div class="hov-title">Hover a cell</div>
+      <span style="color:#aaa;font-size:10px;">Move your mouse over<br>the map to see values.</span>
+    </div>
+  </div>
+</div>
+ 
+<footer>
+  Data: CMIP6 CESM2 historical simulation (NCAR) — monthly surface air temperature (tas), converted from Kelvin.
+  Decade extremes = max/min of all monthly values within the decade window.
+  The 2010s decade covers 2010–2014 only (end of historical run).
+</footer>
+ 
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════════════ */
+let mode = 'hot', di = 0;
+let gridData = null;   // loaded from ca_grid_data.json
+let proj = null;
+let colorScale = null;
+ 
+const YEARS = d3.range(1950, 2020);
+const SVG_W = 480, SVG_H = 620;
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   COLOR SCALES  — continuous, dark = extreme
+═══════════════════════════════════════════════════════════════════════ */
+const SCALES = {
+  hot: {
+    title: 'Max temp (°C)',
+    lo: 15,
+    hi: 50,
+    loLabel: '15°C',
+    hiLabel: '50°C',
+    fn: v => {
+      const t = Math.max(0, Math.min(1, (v - 15) / 35));
+      return d3.interpolateYlOrRd(t);
+    }
+  },
+
+  cold: {
+    title: 'Min temp (°C)',
+    lo: -10,
+    hi: 15,
+    loLabel: '-10°C',
+    hiLabel: '15°C',
+    fn: v => {
+      const t = Math.max(0, Math.min(1, (v + 10) / 25));
+      return d3.interpolateBlues(1 - t);
+    }
+  },
+
+  range: {
+    title: 'Temp range °C (hot−cold)',
+    lo: 0,
+    hi: 30,
+    loLabel: '0°C',
+    hiLabel: '30°C',
+    fn: v => {
+      const t = Math.max(0, Math.min(1, (v - 0) / 30));
+      return d3.interpolatePuRd(t);
+    }
+  }
+};
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════════════ */
+function getVal(cell, m, i) {
+  if (m === 'hot')  return cell.hot[i];
+  if (m === 'cold') return cell.cold[i];
+  return (cell.hot[i] !== null && cell.cold[i] !== null)
+    ? parseFloat((cell.hot[i] - cell.cold[i]).toFixed(1))
+    : null;
+}
+ 
+function colorOf(v, m) {
+  if (v === null) return '#ccc';
+  return SCALES[m].fn(v);
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   LEGEND BAR  (drawn on a canvas)
+═══════════════════════════════════════════════════════════════════════ */
+function drawLegend(m) {
+  const cfg = SCALES[m];
+  document.getElementById('leg-title').textContent = cfg.title;
+  document.getElementById('leg-lo').textContent    = cfg.loLabel;
+  document.getElementById('leg-hi').textContent    = cfg.hiLabel;
+ 
+  const canvas = document.getElementById('legend-bar');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+ 
+  for (let x = 0; x < W; x++) {
+    const v = cfg.lo + (x / W) * (cfg.hi - cfg.lo);
+    ctx.fillStyle = cfg.fn(v);
+    ctx.fillRect(x, 0, 1, H);
+  }
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   RENDER  — update all cell fill colors
+═══════════════════════════════════════════════════════════════════════ */
+function render() {
+  if (!gridData) return;
+ 
+  d3.selectAll('.grid-cell')
+    .transition().duration(300)
+    .attr('fill', function() {
+      const cell = d3.select(this).datum();
+      return colorOf(getVal(cell, mode, di), mode);
+    });
+ 
+  drawLegend(mode);
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   COMPUTE CELL PIXEL SIZE from projection
+   CMIP6 CESM2 grid spacing is ~0.9° lat × ~1.25° lon
+═══════════════════════════════════════════════════════════════════════ */
+function cellPixelSize(proj) {
+  const DLAT = 0.94, DLON = 1.25;  // approx CESM2 grid spacing
+  const [x0, y0] = proj([-117, 36]);
+  const [x1, y1] = proj([-117 + DLON, 36 + DLAT]);
+  return { w: Math.abs(x1 - x0) + 1, h: Math.abs(y0 - y1) + 1 };
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   BUILD MAP  — called once after both topology + grid data are loaded
+═══════════════════════════════════════════════════════════════════════ */
+function buildMap(caFeature) {
+  proj = d3.geoMercator().fitSize([SVG_W, SVG_H], caFeature);
+  const pathGen = d3.geoPath(proj);
+  const { w: cellW, h: cellH } = cellPixelSize(proj);
+ 
+  const svg = d3.select('#ca-svg');
+  svg.selectAll('*').remove();
+ 
+  /* Define clip path = California outline so cells outside are hidden */
+  const defs = svg.append('defs');
+  defs.append('clipPath')
+      .attr('id', 'ca-clip')
+    .append('path')
+      .attr('d', pathGen(caFeature));
+ 
+  /* Group for grid cells, clipped to CA */
+  const cellGroup = svg.append('g').attr('clip-path', 'url(#ca-clip)');
+ 
+  /* Floating label */
+  const floatLabel = document.getElementById('float-label');
+  const mapWrap    = document.getElementById('map-wrap');
+ 
+  /* Draw one rect per grid cell */
+  cellGroup.selectAll('rect.grid-cell')
+    .data(gridData.cells)
+    .join('rect')
+      .attr('class', 'grid-cell')
+      .attr('x',      d => { const [px] = proj([d.lon, d.lat]); return px - cellW / 2; })
+      .attr('y',      d => { const [, py] = proj([d.lon, d.lat]); return py - cellH / 2; })
+      .attr('width',  cellW)
+      .attr('height', cellH)
+      .attr('fill',   d => colorOf(getVal(d, mode, di), mode))
+      /* ── Hover: show float label ── */
+      .on('mousemove', function(event, d) {
+        const hot   = d.hot[di]  !== null ? d.hot[di].toFixed(1)  + '°C' : 'N/A';
+        const cold  = d.cold[di] !== null ? d.cold[di].toFixed(1) + '°C' : 'N/A';
+        const range = (d.hot[di] !== null && d.cold[di] !== null)
+          ? (d.hot[di] - d.cold[di]).toFixed(1) + '°C' : 'N/A';
+ 
+        floatLabel.innerHTML =
+          `<strong style="display:block;margin-bottom:2px;">${Math.abs(d.lat).toFixed(2)}°N, ${Math.abs(d.lon).toFixed(2)}°W</strong>
+           <span style="color:#8B0000;">Max high: ${hot}</span><br>
+           <span style="color:#003080;">Min low:  ${cold}</span><br>
+           <span style="color:#5a0060;">Range:    ${range}</span>`;
+ 
+        /* Current value for active mode (bold) */
+        const v = getVal(d, mode, di);
+        const vStr = v !== null ? v.toFixed(1) + '°C' : 'N/A';
+        floatLabel.innerHTML +=
+          `<hr style="margin:4px 0;border:none;border-top:1px solid #eee;">
+           <strong>${SCALES[mode].title}: ${vStr}</strong>`;
+ 
+        /* Position relative to map-wrap */
+        const rect = mapWrap.getBoundingClientRect();
+        let lx = event.clientX - rect.left + 14;
+        let ly = event.clientY - rect.top  - 10;
+        floatLabel.style.display = 'block';
+        /* Keep inside viewport horizontally */
+        if (lx + 160 > mapWrap.offsetWidth) lx = event.clientX - rect.left - 164;
+        floatLabel.style.left = lx + 'px';
+        floatLabel.style.top  = ly + 'px';
+ 
+        /* Sidebar panel */
+        document.getElementById('hovered-panel').innerHTML =
+          `<div class="hov-title">${YEARS[di]}</div>
+           <span style="color:#8B0000;">Max: ${hot}</span><br>
+           <span style="color:#003080;">Min: ${cold}</span><br>
+           <span style="color:#5a0060;">Range: ${range}</span><br>
+           <div style="font-size:10px;color:#999;margin-top:4px;">${Math.abs(d.lat).toFixed(2)}°N ${Math.abs(d.lon).toFixed(2)}°W</div>`;
+      })
+      .on('mouseleave', function() {
+        floatLabel.style.display = 'none';
+        document.getElementById('hovered-panel').innerHTML =
+          `<div class="hov-title">Hover a cell</div>
+           <span style="color:#aaa;font-size:10px;">Move your mouse over<br>the map to see values.</span>`;
+      });
+ 
+  /* California outline on top */
+  svg.append('path')
+    .datum(caFeature)
+    .attr('class', 'ca-outline')
+    .attr('d', pathGen);
+ 
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('ca-svg').style.display = 'block';
+  drawLegend(mode);
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   CONTROLS
+═══════════════════════════════════════════════════════════════════════ */
+function setMode(m) {
+  mode = m;
+  ['hot', 'cold', 'range'].forEach(x => {
+    document.getElementById('btn-' + x).className =
+      'ctrl-btn' + (x === m ? ' active-' + m : '');
+  });
+  render();
+}
+ 
+function setYear(v) {
+  di = v;
+  document.getElementById('dec-lbl').textContent = YEARS[di];
+  render();
+}
+ 
+/* ═══════════════════════════════════════════════════════════════════════
+   BOOTSTRAP  — load topology + grid data in parallel
+═══════════════════════════════════════════════════════════════════════ */
+Promise.all([
+  fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r => r.json()),
+  fetch('ca_grid_data.json').then(r => r.json())
+])
+.then(([us, grid]) => {
+  gridData = grid;
+  const states    = topojson.feature(us, us.objects.states);
+  const caFeature = states.features.find(f => f.properties.name === 'California');
+  buildMap(caFeature);
+})
+.catch(err => {
+  document.getElementById('loading-msg').textContent =
+    'Error: ' + err.message +
+    ' — Make sure ca_grid_data.json is in the same folder as this HTML file, ' +
+    'and open via a local server (e.g. python -m http.server 8000), not by double-clicking.';
+  document.getElementById('loading-msg').style.color = '#c00';
+});
+</script>
+</body>
+</html>

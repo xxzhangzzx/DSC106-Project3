@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>San Diego Temperature Extremes</title>
+  <link rel="stylesheet" href="sd_temp.css" />
+</head>
+<body>
+
+<h1>San Diego Temperature Extremes (1850–2100)</h1>
+<p class="subtitle">Annual min, mean, and max temperature · CMIP6 GFDL-CM4 · °C</p>
+
+<div class="controls">
+  <span>Toggle:</span>
+  <button id="btn-hist" class="on-hist" onclick="toggle('historical')">Historical</button>
+  <button id="btn-s245" class="on-s245" onclick="toggle('SSP2-4.5')">SSP2-4.5 (moderate)</button>
+  <button id="btn-s585" class="on-s585" onclick="toggle('SSP5-8.5')">SSP5-8.5 (high emissions)</button>
+</div>
+
+<div id="chart">
+  <svg id="viz"></svg>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="swatch" style="background:#444441;"></div>Historical</div>
+  <div class="legend-item"><div class="swatch" style="background:#ba7517;"></div>SSP2-4.5 moderate</div>
+  <div class="legend-item"><div class="swatch" style="background:#a32d2d;"></div>SSP5-8.5 high emissions</div>
+  <div class="legend-item"><div class="swatch" style="border-top:2px dashed #888780;background:none;height:0;"></div>Projections start (2015)</div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-year" id="tt-year"></div>
+  <div id="tt-content"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="sd_temp.js"></script>
+
+</body>
+</html>

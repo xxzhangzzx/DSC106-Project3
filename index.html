@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>San Diego Extreme Temperature Patterns</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="#overview">Overview</a>
+      <a href="#dataset">Dataset</a>
+      <a href="#visualizations">Visualizations</a>
+      <a href="#writeup">Write-up</a>
+    </nav>
+
+    <section class="hero" id="overview">
+      <p class="eyebrow">DSC 106 Project 3 · Interactive Visualization</p>
+      <h1>How Have San Diego's Temperature Extremes Shifted Under Different Emission Scenarios?</h1>
+      <p class="hero-text">
+        This project explores how San Diego's annual minimum, mean, and maximum temperatures have
+        shifted from 1850 to 2100 using CMIP6 climate model data. We compare historical temperatures
+        with moderate and high emissions projections to understand how local temperature extremes may change.
+      </p>
+    </section>
+  </header>
+
+  <main>
+    <section class="card" id="team">
+      <h2>Team</h2>
+      <div class="team-grid">
+        <article>
+          <h3>James Vidal</h3>
+          <p>Writing</p>
+        </article>
+        <article>
+          <h3>Kaitlyn Tam</h3>
+          <p>Visual graph</p>
+        </article>
+        <article>
+          <h3>Vivian Zhu</h3>
+          <p>Visual graph</p>
+        </article>
+        <article>
+          <h3>Zhixiang Zhang</h3>
+          <p>Website</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="dataset">
+      <h2>Dataset</h2>
+      <p>
+        We use Coupled Model Intercomparison Project Phase 6 (CMIP6) climate model data to study
+        temperature patterns in San Diego. The raw data includes monthly temperature values measured
+        in Kelvin, which we transformed into annual minimum, mean, and maximum temperatures in Celsius.
+      </p>
+
+      <div class="info-list">
+        <div>
+          <strong>Dataset:</strong>
+          <span>CMIP6 climate model temperature data</span>
+        </div>
+        <div>
+          <strong>Variables:</strong>
+          <span>Annual minimum, mean, and maximum temperature</span>
+        </div>
+        <div>
+          <strong>Scenarios:</strong>
+          <span>Historical, SSP2-4.5 moderate emissions, and SSP5-8.5 high emissions</span>
+        </div>
+        <div>
+          <strong>Region of interest:</strong>
+          <span>San Diego, California</span>
+        </div>
+      </div>
+
+      <a class="button-link" href="https://console.cloud.google.com/marketplace/product/noaa-public/cmip6?project=fluid-script-453604-u5" target="_blank" rel="noopener noreferrer">
+        View CMIP6 Dataset
+      </a>
+    </section>
+
+    <section class="card" id="question">
+      <h2>Research Question</h2>
+      <p class="question">
+        How have San Diego's temperature extremes, including annual minimums and maximums,
+        shifted from 1850 to 2100 under moderate versus high emission scenarios?
+      </p>
+      <p>
+        We compare historical temperatures with two future emissions pathways to examine whether
+        San Diego's annual temperature extremes become warmer, more variable, or increasingly different
+        between moderate and high emissions conditions.
+      </p>
+    </section>
+
+    <section class="card" id="visualizations">
+      <h2>Visualizations</h2>
+      <p class="section-note">
+        This section contains two D3 graphs. The first graph provides a spatial view of California
+        temperature extremes across years, while the second graph focuses on San Diego by comparing
+        historical temperature trends with moderate and high emissions projections from 1850 to 2100.
+      </p>
+
+      <div class="d3-graph-grid">
+        <article class="d3-graph-card">
+          <h3>Graph 1: California Extreme Temperature Patterns by Year</h3>
+          <p>
+            This D3 map lets viewers switch between hottest extreme, coldest extreme, and temperature
+            range while using a year slider to explore how temperature patterns change over time.
+          </p>
+
+          <iframe
+            class="d3-frame"
+            src="ca_temp.html"
+            title="California Extreme Temperature Patterns D3 Visualization"
+          ></iframe>
+        </article>
+
+        <article class="d3-graph-card">
+          <h3>Graph 2: San Diego Temperature Extremes and Future Scenarios</h3>
+          <p>
+            This D3 line chart compares San Diego's annual minimum, mean, and maximum temperatures
+            across historical data and future climate scenarios. Users can toggle historical,
+            SSP2-4.5 moderate emissions, and SSP5-8.5 high emissions to see how temperature extremes
+            shift over time.
+          </p>
+
+          <iframe
+            class="d3-frame sd-frame"
+            src="sd_temp.html"
+            title="San Diego Temperature Extremes D3 Visualization"
+          ></iframe>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="context">
+      <h2>Climate Context</h2>
+      <div class="context-grid">
+        <article>
+          <h3>From “Sunny San Diego” to Climate Change</h3>
+          <p>
+            San Diego is often described as having stable, warm, and sunny weather. As UCSD students,
+            this local reputation motivated us to investigate whether that perception still holds when
+            we look at long-term temperature data and future climate projections.
+          </p>
+        </article>
+
+        <article>
+          <h3>Historical and Future Scenarios</h3>
+          <p>
+            Our project compares historical temperature data from 1850 to 2014 with projected data from
+            2015 to 2100. By separating SSP2-4.5 moderate emissions and SSP5-8.5 high emissions, we can
+            examine how different emissions pathways may lead to different temperature outcomes.
+          </p>
+        </article>
+
+        <article>
+          <h3>Annual Minimums and Maximums</h3>
+          <p>
+            Instead of only showing average temperature, our main graph also includes annual minimum and
+            maximum temperatures. This helps us study both sides of temperature extremes and see whether
+            San Diego's coldest and hottest yearly values shift upward over time.
+          </p>
+        </article>
+
+        <article>
+          <h3>Why Interaction Matters</h3>
+          <p>
+            The interactive toggles allow viewers to compare historical, moderate-emissions, and
+            high-emissions lines directly. This makes it easier to see when the projection scenarios
+            begin to diverge and how much more extreme the high-emissions pathway becomes by 2100.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="writeup">
+      <h2>Write-up</h2>
+
+      <section class="writeup-block">
+        <h3>Motivation</h3>
+        <p>
+          As students going to UCSD, we often assume that the advertised idea of “sunny San Diego”
+          is accurate. This was our initial assumption when attending campus, and we wanted to further
+          investigate the validity of this perceived stable, warm, and sunny weather. We also wanted
+          to understand how average temperature has changed over time.
+        </p>
+        <p>
+          Another question within this investigation is how temperature extremes, including the coldest
+          and hottest periods, have changed and how these patterns might differ under different emissions
+          scenarios. This led us to our final question: How have San Diego's temperature extremes,
+          including annual minimums and maximums, shifted from 1850 to 2100 under moderate versus high
+          emission scenarios?
+        </p>
+      </section>
+
+      <section class="writeup-block">
+        <h3>Data Transformations</h3>
+        <p>
+          When we initially loaded the raw Coupled Model Intercomparison Project Phase 6 (CMIP6) data,
+          it provided historical monthly temperature values measured in Kelvin. To create a usable and
+          more understandable dataset, we transformed the data in several ways.
+        </p>
+        <p>
+          First, we aggregated the monthly values to calculate annual minimum, maximum, and mean
+          temperatures. Then, we converted Kelvin to Celsius so the values would be easier to interpret.
+          Although the United States commonly uses Fahrenheit, Celsius provides a more universally
+          accepted measurement for climate data.
+        </p>
+        <p>
+          Lastly, we categorized the data into three scenarios before converting it into CSV files:
+          historical data from 1850 to 2014, SSP2-4.5 moderate emissions from 2015 to 2100, and
+          SSP5-8.5 high emissions from 2015 to 2100. Separating moderate and high emissions was important
+          because it allowed us to visualize how different future emissions pathways may affect San Diego's
+          temperature extremes.
+        </p>
+      </section>
+
+      <section class="writeup-block">
+        <h3>Design Rationale</h3>
+        <p>
+          In our visualization, we used several visual encodings to highlight our findings. The x-axis
+          is labeled from 1850 to 2100, allowing us to show both historical observed data and projected
+          temperature changes under different emissions conditions. The y-axis is labeled in Celsius,
+          using a linear scale to make the temperature values easy to compare.
+        </p>
+        <p>
+          We used solid lines to represent annual mean temperature. Different colors distinguish the
+          historical, moderate-emissions, and high-emissions scenarios. We used dashed lines to represent
+          annual minimum and maximum temperatures. These dashed lines contrast with the solid mean lines
+          and emphasize how the yearly extremes deviate from the average.
+        </p>
+        <p>
+          Finally, we included a vertical dashed line to mark the separation between historical data and
+          projected data. This helps viewers understand when the graph shifts from observed climate data
+          to future climate scenarios.
+        </p>
+      </section>
+
+      <section class="writeup-block">
+        <h3>Development Process</h3>
+        <p>
+          Our team divided the project based on writing, visual design, and website implementation.
+          James Vidal worked on the written explanation, Kaitlyn Tam and Vivian Zhu worked on the visual
+          graphs, and Zhixiang Zhang worked on building and organizing the website.
+        </p>
+        <p>
+          The most time-consuming parts were preparing the climate data, converting it into a format that
+          could be used in D3, and integrating multiple visualizations into one webpage. We also spent time
+          making sure the interactive graphs could be loaded from static files so the final project would
+          work correctly on GitHub Pages.
+        </p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>DSC 106 Project 3 · CMIP6 Climate Data · San Diego Temperature Extremes</p>
+  </footer>
+</body>
+</html>
