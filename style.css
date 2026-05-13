@@ -340,3 +340,13 @@ main {
   height: 620px;
   background: #f9f8f6;
 }
+
+.writeup-block ul {
+  margin: 0.5rem 0 1rem 1.25rem;
+  padding-left: 1rem;
+  color: var(--muted);
+}
+
+.writeup-block li {
+  margin-bottom: 0.45rem;
+}

@@ -184,60 +184,66 @@
       <section class="writeup-block">
         <h3>Motivation</h3>
         <p>
-          As students going to UCSD, we often assume that the advertised idea of “sunny San Diego”
-          is accurate. This was our initial assumption when attending campus, and we wanted to further
-          investigate the validity of this perceived stable, warm, and sunny weather. We also wanted
-          to understand how average temperature has changed over time.
+          As students going to UCSD, we assume that the advertised idea of “sunny San Diego”
+          is accurate. This was our initial assumption upon attending our campus, and we aim to
+          further investigate the validity of this perceived “stable warm and sunny weather.”
         </p>
         <p>
-          Another question within this investigation is how temperature extremes, including the coldest
-          and hottest periods, have changed and how these patterns might differ under different emissions
-          scenarios. This led us to our final question: How have San Diego's temperature extremes,
-          including annual minimums and maximums, shifted from 1850 to 2100 under moderate versus high
-          emission scenarios?
+          Furthermore, we wanted to understand the rise in temperature on average. Another question
+          within this investigation is how the extremes, including the coldest and hottest months,
+          have changed and how they might differ by emissions. This allowed us to develop the following
+          question: How have San Diego's temperature extremes, including annual minimums and maximums,
+          shifted from 1850 to 2100 under moderate versus high emission scenarios?
         </p>
       </section>
 
       <section class="writeup-block">
         <h3>Data Transformations</h3>
         <p>
-          When we initially loaded the raw Coupled Model Intercomparison Project Phase 6 (CMIP6) data,
-          it provided historical monthly temperature values measured in Kelvin. To create a usable and
-          more understandable dataset, we transformed the data in several ways.
+          Upon the initial load of the raw Coupled Model Intercomparison Project Phase 6 (CMIP6) data,
+          it provided us with historical data by month, measured in Kelvin. To create a usable and more
+          easily understandable dataset, we did the following:
         </p>
+        <ul>
+          <li>Aggregated monthly values to determine annual minimum, maximum, and mean temperatures.</li>
+          <li>
+            Converted Kelvin to Celsius for easier understanding. Although the United States uses
+            Fahrenheit, Celsius provides a more universally accepted measurement of temperature.
+          </li>
+          <li>Categorized the data into three scenarios before converting it to CSV files.</li>
+        </ul>
         <p>
-          First, we aggregated the monthly values to calculate annual minimum, maximum, and mean
-          temperatures. Then, we converted Kelvin to Celsius so the values would be easier to interpret.
-          Although the United States commonly uses Fahrenheit, Celsius provides a more universally
-          accepted measurement for climate data.
-        </p>
-        <p>
-          Lastly, we categorized the data into three scenarios before converting it into CSV files:
-          historical data from 1850 to 2014, SSP2-4.5 moderate emissions from 2015 to 2100, and
-          SSP5-8.5 high emissions from 2015 to 2100. Separating moderate and high emissions was important
-          because it allowed us to visualize how different future emissions pathways may affect San Diego's
-          temperature extremes.
+          The three scenarios are historical data from 1850 to 2014, SSP2-4.5 moderate emissions from
+          2015 to 2100, and SSP5-8.5 high emissions from 2015 to 2100. Separating the moderate and high
+          emissions was important because it allowed us to visualize the difference in our interactive graph.
         </p>
       </section>
 
       <section class="writeup-block">
         <h3>Design Rationale</h3>
         <p>
-          In our visualization, we used several visual encodings to highlight our findings. The x-axis
-          is labeled from 1850 to 2100, allowing us to show both historical observed data and projected
-          temperature changes under different emissions conditions. The y-axis is labeled in Celsius,
-          using a linear scale to make the temperature values easy to compare.
+          On our visualization of our investigation, we included the following visual encodings to highlight
+          our findings.
         </p>
         <p>
-          We used solid lines to represent annual mean temperature. Different colors distinguish the
-          historical, moderate-emissions, and high-emissions scenarios. We used dashed lines to represent
-          annual minimum and maximum temperatures. These dashed lines contrast with the solid mean lines
-          and emphasize how the yearly extremes deviate from the average.
+          The x-axis is labeled from 1850 to 2100. This allows us to represent the historical observed data
+          as well as the predicted temperature changes in the extremes under different emission conditions.
         </p>
         <p>
-          Finally, we included a vertical dashed line to mark the separation between historical data and
-          projected data. This helps viewers understand when the graph shifts from observed climate data
-          to future climate scenarios.
+          The y-axis is labeled using Celsius. This allowed us to present our findings in a universally
+          understood metric using a linear scale from -3° to 34°.
+        </p>
+        <p>
+          The solid line represents the annual mean temperature, and the different lines are differentiated
+          by color to represent the different emission scenarios: historical, moderate, and high conditions.
+        </p>
+        <p>
+          The dashed lines represent the annual minimum and maximum. Dashed lines were used to contrast with
+          the existing solid lines, but also to emphasize the deviation from the mean of the extremes year to year.
+        </p>
+        <p>
+          Lastly, the vertical dashed line was used to highlight the separation between the already observed
+          historical data and the projected data.
         </p>
       </section>
 
